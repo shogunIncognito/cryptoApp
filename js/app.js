@@ -49,20 +49,21 @@ function comprobarCampos(e) {
     const {criptomoneda,moneda} = objBusq;
 
     if(criptomoneda == '' || moneda == '') {
+        //si algun campo no es valida , se llama la funcion para mostrar el error
         return mostrarError('Ambos campos son obligatorios');
     }
-
+    //Despues de verificar las opciones se consulta a la api
     consultarApi(moneda,criptomoneda)
 }
 
-
+//registra en el objeto los valores que selecciono el usuario
 function leerValor(e) {
     objBusq[e.target.name] = e.target.value;
-
 }
 
+//Se muestran los resultados despues de consultar a la api
 function mostrarDatos(crypto) {
-    console.log(crypto);
+    //se destructuran los datos obtenidos de la consulta
     const {PRICE,HIGHDAY,LOWDAY,LASTUPDATE,CHANGEPCT24HOUR} = crypto;
     limpiarHTML()
 
@@ -86,7 +87,7 @@ function mostrarDatos(crypto) {
     const ultimaActualizacion = document.createElement('p')
     ultimaActualizacion.innerHTML = `Ultima actualizacion fue: <span>${LASTUPDATE}</span>`
 
-
+    //se agregan al html cada resultado
     resultado.appendChild(cryp)
     resultado.appendChild(precio)
     resultado.appendChild(precioBajo)
@@ -95,10 +96,10 @@ function mostrarDatos(crypto) {
     resultado.appendChild(ultimaActualizacion)
 }
 
-
+//Funcion que muestra un error segun el mensaje añadido
 function mostrarError(msg) {
     const alerta = document.querySelector('.error')
-
+    //verifica que no exista una alerta para saber si crear otra o no
     if(!alerta) {
         limpiarHTML()
         const divMensaje = document.createElement('div')
@@ -106,19 +107,19 @@ function mostrarError(msg) {
         divMensaje.textContent = msg;
         
         result.appendChild(divMensaje)
-
+        //despues de 3 segundos la alerta desaparece
         setTimeout(() => {
             divMensaje.remove()
         }, 3000);
     }
 }
-
+//elimina todo elemento que este en el div de resultado
 function limpiarHTML() {
     while(result.firstChild) {
         result.removeChild(result.firstChild)
     }
 }
-
+//funcion que crea el spinner al consultar las imagenes
 function crearSpinner() {
     limpiarHTML()
     result.innerHTML = `
@@ -128,5 +129,4 @@ function crearSpinner() {
         <div class="bounce3"></div>
     </div>
     `
-
 }
