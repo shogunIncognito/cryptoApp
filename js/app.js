@@ -2,6 +2,8 @@ const criptomonedas = document.querySelector('#criptomonedas');
 const formulario = document.querySelector('#formulario');
 const moneda = document.querySelector('#moneda');
 const result = document.querySelector('#resultado');
+const boton = document.querySelector('.boton');
+
 //Objeto donde se almacena la eleccion del usuario
 const objBusq = {
     criptomoneda: '',
@@ -13,23 +15,40 @@ document.addEventListener('DOMContentLoaded',consultarCriptomonedas)
 moneda.addEventListener('change',leerValor)
 criptomonedas.addEventListener('change',leerValor)
 formulario.addEventListener('submit',comprobarCampos)
+
+
 //Consulta las criptomonedas para el selector
-function consultarCriptomonedas() {
+async function consultarCriptomonedas() {
     const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD';
 
-    fetch(url)
-        .then(response => response.json())
-        .then(json => agregarCriptos(json.Data))
+    try {       
+        const respuesta = await fetch(url);
+        const result = await respuesta.json();
+        
+        agregarCriptos(result.Data)
+    } catch (error) {
+        boton.disabled = true;
+        mostrarError('Hubo un fallo al consultar las criptomonedas')
+    } 
+
 }
+
 //Consulta la api con los valores ingresados
-function consultarApi(moned,crypt) {
+async function consultarApi(moned,crypt) {
     
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${crypt}&tsyms=${moned}`
 
-    fetch(url)
-        .then(response => response.json())
-        .then(json => mostrarDatos(json.DISPLAY[crypt][moned]))
+    try {       
+        const respuesta = await fetch(url);
+        const result = await respuesta.json();
+        
+        mostrarDatos(result.DISPLAY[crypt][moned])
+    } catch (error) {
+        mostrarError('Hubo un fallo al consultar la api')
+    }
+
 }
+
 //Agrega las opciones de las criptomonedas al selector
 function agregarCriptos(cripto) {
     cripto.forEach(crip=>{
@@ -42,6 +61,7 @@ function agregarCriptos(cripto) {
         criptomonedas.appendChild(option)
     })
 }
+
 //comprueba que el usuario haya seleccionado opciones validas
 function comprobarCampos(e) {
     e.preventDefault()
@@ -113,12 +133,14 @@ function mostrarError(msg) {
         }, 3000);
     }
 }
+
 //elimina todo elemento que este en el div de resultado
 function limpiarHTML() {
     while(result.firstChild) {
         result.removeChild(result.firstChild)
     }
 }
+
 //funcion que crea el spinner al consultar las imagenes
 function crearSpinner() {
     limpiarHTML()
